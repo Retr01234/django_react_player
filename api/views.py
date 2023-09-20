@@ -1,6 +1,9 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from rest_framework import generics
+from .serializers import GroupSerializer
+from .models import Group
 
 # Create your views here.
-def main(request):
-    return HttpResponse("Start Page")
+class GroupView(generics.CreateAPIView):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
