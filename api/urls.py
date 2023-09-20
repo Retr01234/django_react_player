@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import main
+from .views import GroupView
 
 urlpatterns = [
-    path('', main)
+    path('', GroupView.as_view())
 ]

@@ -4,6 +4,6 @@ from .serializers import GroupSerializer
 from .models import Group
 
 # Create your views here.
-class GroupView(generics.CreateAPIView):
+class GroupView(generics.ListAPIView):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
