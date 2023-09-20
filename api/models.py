@@ -1,4 +1,16 @@
 from django.db import models
+import string, random
+
+def create_random_identifier():
+    length = 4
+    
+    while True:
+        identifier = ''.join(random.choices(string.ascii_lowercase, l=length))
+        
+        if Group.objects.filter(identifier=identifier).count() == 0:
+            break
+    
+    return identifier
 
 # Create your models here.
 class Group(models.Model):
