@@ -24,9 +24,8 @@ module.exports = {
     plugins: [
         new webpack.DefinePlugin({
             "process.env": {
-                // Switch to Product later
-                NODE_ENV: JSON.stringify("development"),
+                NODE_ENV: JSON.stringify("production"),
             },
         }),
     ],
-    };
+};
