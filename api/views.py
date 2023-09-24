@@ -39,3 +39,22 @@ class AddGroupView(APIView):
                 return Response(GroupSerializer(group).data, status=status.HTTP_201_CREATED)
         
         return Response({'Bad Request': 'Data is Invalid'}, status=status.HTTP_400_BAD_REQUEST)
+    
+class GetGroupView(APIView):
+    serializer_class = GroupSerializer
+    search_url = 'identifier'
+    
+    def get(self, request, format=None):
+        identifier = request.GET.get(self.search_url)
+
+        if identifier != None:
+            group = Group.objects.filter(identifier=identifier)
+
+            if len(group) > 0:
+                data = GroupSerializer(group[0]).data
+                data['owner'] = self.request.session.session_key == group[0].owner
+
+                return Response(data, status=status.HTTP_200_OK)
+            return Response({'Group Not Found': 'Invalid identifier.'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Identifier Paramater not found'}, status=status.HTTP_400_BAD_REQUEST)

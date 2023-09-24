@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import EnterRoom from "./EnterRoom";
-import AddRoom from "./AddRoom";
+import EnterGroup from "./EnterGroup";
+import AddGroup from "./AddGroup";
+import Group from "./Group";
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
 
 export default class Home extends Component {
@@ -13,9 +14,10 @@ export default class Home extends Component {
             <Router>
                 <Switch>
                     <Route exact path="/"><h1>Home page</h1></Route>
-                    <Route path="/enter" component={EnterRoom} />
-                    <Route path="/add" component={AddRoom} />
-                    </Switch>
+                    <Route path="/group/:groupIdentifier" component={Group} />
+                    <Route path="/enter" component={EnterGroup} />
+                    <Route path="/add" component={AddGroup} />
+                </Switch>
             </Router>
         );
     }

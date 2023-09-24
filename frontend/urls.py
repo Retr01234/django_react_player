@@ -5,5 +5,6 @@ urlpatterns = [
     path('', index),
     path('enter', index),
     path('add', index),
-    path('enter/1', index)
+    path('group/<str:groupIdentifier>', index),
+    path('enter/1', index),
 ]
