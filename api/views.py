@@ -30,11 +30,15 @@ class AddGroupView(APIView):
                 group.pausible = pausible
                 group.wants_to_skip = wants_to_skip
                 group.save(update_fields=['pausible', 'wants_to_skip'])
+                
+                self.request.session['group_identifier'] = group.identifier
 
                 return Response(GroupSerializer(group).data, status=status.HTTP_200_OK)
             else:
                 group = Group(owner=owner, pausible=pausible, wants_to_skip=wants_to_skip)
                 group.save()
+                
+                self.request.session['group_identifier'] = group.identifier
 
                 return Response(GroupSerializer(group).data, status=status.HTTP_201_CREATED)
         
@@ -58,3 +62,25 @@ class GetGroupView(APIView):
             return Response({'Group Not Found': 'Invalid identifier.'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'Bad Request': 'Identifier Paramater not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+class EnterGroupView(APIView):
+    search_url = 'identifier'
+    
+    def post(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+
+        identifier = request.data.get(self.search_url)
+
+        if identifier != None:
+            outcome = Group.objects.filter(identifier=identifier)
+
+            if len(outcome) > 0:
+                group = outcome[0]
+                self.request.session['group_identifier'] = identifier
+
+                return Response({'message': 'Group Entered!'}, status=status.HTTP_200_OK)
+
+            return Response({'Bad Request': 'Invalid Group Identifier'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'Bad Request': 'Invalid Data, could not find Identifier'}, status=status.HTTP_400_BAD_REQUEST)

@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import GroupView, AddGroupView, GetGroupView
+from .views import GroupView, AddGroupView, GetGroupView, EnterGroupView
 
 urlpatterns = [
     path('group', GroupView.as_view()),
     path('add-group', AddGroupView.as_view()),
-    path('get-group', GetGroupView.as_view())
+    path('get-group', GetGroupView.as_view()),
+    path('enter-group', EnterGroupView.as_view())
 ]
