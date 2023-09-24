@@ -97,7 +97,7 @@ export default class AddGroup extends Component {
                             }}
                         />
                         <FormHelperText>
-                            <div align="center">Peopele Want to Skip</div>
+                            <div align="center">People Want to Skip</div>
                         </FormHelperText>
                     </FormControl>
                 </Grid>
