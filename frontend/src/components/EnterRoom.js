@@ -6,6 +6,6 @@ export default class EnterRoom extends Component {
     }
 
     render() {
-        return <p>Enter a Room</p>;
+        return <h1>Enter a Room</h1>;
     }
 }

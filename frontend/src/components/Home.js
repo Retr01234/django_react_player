@@ -12,7 +12,7 @@ export default class Home extends Component {
         return (
             <Router>
                 <Switch>
-                    <Route exact path="/"><p>Home page</p></Route>
+                    <Route exact path="/"><h1>Home page</h1></Route>
                     <Route path="/enter" component={EnterRoom} />
                     <Route path="/add" component={AddRoom} />
                     </Switch>
