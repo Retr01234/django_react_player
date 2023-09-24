@@ -17,7 +17,6 @@ export default class Group extends Component {
     groupDetails() {
         fetch("/home/get-group" + "?identifier=" + this.groupIdentifier).then((response) => response.json())
         .then((data) => {
-            console.log("API Data:", data); 
             this.setState({
                 wantsToSkip: data.wants_to_skip,
                 pausible: data.pausible,
@@ -27,7 +26,6 @@ export default class Group extends Component {
     }
 
     render() {
-        console.log("State:", this.state);
         return (
             <div>
                 <h4>{this.groupIdentifier}</h4>
