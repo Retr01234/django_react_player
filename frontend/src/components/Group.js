@@ -15,7 +15,7 @@ export default class Group extends Component {
     }
 
     groupDetails() {
-        fetch("/home/get-group" + "?identifier=" + this.groupIdentifier).then((response) => response.json())
+        fetch("/backend/get-group" + "?identifier=" + this.groupIdentifier).then((response) => response.json())
         .then((data) => {
             this.setState({
                 wantsToSkip: data.wants_to_skip,

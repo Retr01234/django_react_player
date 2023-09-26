@@ -30,7 +30,7 @@ export default class EnterGroup extends Component {
             }),
         };
 
-        fetch("/home/enter-group", requestOptions)
+        fetch("/backend/enter-group", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     this.props.history.push(`/group/${this.state.groupIdentifier}`);

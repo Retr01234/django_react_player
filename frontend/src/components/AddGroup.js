@@ -47,7 +47,7 @@ export default class AddGroup extends Component {
             })
         };
 
-        fetch("/home/add-group", requestOptions)
+        fetch("/backend/add-group", requestOptions)
             .then((response) => response.json())
             .then((data) => this.props.history.push("/group/" + data.identifier));
     }
