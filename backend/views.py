@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,7 +10,17 @@ from .models import Group
 class GroupView(generics.ListAPIView):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    
+
+class PersonInGroup(APIView):
+    def get(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+
+        data = {
+            'identifier': self.request.session.get('group_identifier')
+        }
+        return JsonResponse(data, status=status.HTTP_200_OK)
+
 class AddGroupView(APIView):
     serializer_class = AddGroupSerializer
 
