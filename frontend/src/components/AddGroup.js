@@ -71,9 +71,10 @@ export default class AddGroup extends Component {
                             <FormControlLabel
                                 value="true"
                                 control={<Radio color="primary" />}
-                                label="Play/Pause"
+                                label="Controls"
                                 labelPlacement="bottom"
                             />
+
                             <FormControlLabel
                                 value="false"
                                 control={<Radio color="secondary" />}
