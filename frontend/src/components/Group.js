@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Grid, Button, Typography } from "@material-ui/core";
 
 export default class Group extends Component {
     constructor(props) {
@@ -12,11 +13,18 @@ export default class Group extends Component {
 
         this.groupIdentifier = this.props.match.params.groupIdentifier;
         this.groupDetails();
+        this.exitGroupBtnClicked = this.exitGroupBtnClicked.bind(this);
     }
 
     groupDetails() {
-        fetch("/backend/get-group" + "?identifier=" + this.groupIdentifier).then((response) => response.json())
-        .then((data) => {
+        return fetch("/backend/get-group" + "?identifier=" + this.groupIdentifier).then((response) => {
+            if (!response.ok) {
+                this.props.exitGroupCallback();
+                this.props.history.push("/");
+            }
+
+            return response.json();
+        }).then((data) => {
             this.setState({
                 wantsToSkip: data.wants_to_skip,
                 pausible: data.pausible,
@@ -25,14 +33,51 @@ export default class Group extends Component {
         });
     }
 
+    exitGroupBtnClicked() {
+        const requestOptions = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+        };
+
+        fetch("/backend/exit-group", requestOptions).then((_response) => {
+            this.props.exitGroupCallback();
+            this.props.history.push("/");
+        });
+    }
+
     render() {
         return (
-            <div>
-                <h4>{this.groupIdentifier}</h4>
-                <p>Votes to Skip: {this.state.wantsToSkip}</p>
-                <p>Pausable: {this.state.pausible.toString()}</p>
-                <p>Owner: {this.state.owner.toString()}</p>
-            </div>
+            <Grid container spacing={3}>
+                <Grid item xs={12} align="center">
+                    <Typography variant="h4" component="h4">
+                        Group ID: {this.groupIdentifier}
+                    </Typography>
+                </Grid>
+
+                <Grid item xs={12} align="center">
+                    <Typography variant="h6" component="h6">
+                        Votes to Skip: {this.state.wantsToSkip}
+                    </Typography>
+                </Grid>
+
+                <Grid item xs={12} align="center">
+                    <Typography variant="h6" component="h6">
+                        Pausable: {this.state.pausible.toString()}
+                    </Typography>
+                </Grid>
+
+                <Grid item xs={12} align="center">
+                    <Typography variant="h6" component="h6">
+                        Owner: {this.state.owner.toString()}
+                    </Typography>
+                </Grid>
+
+                <Grid item xs={12} align="center">
+                    <Button variant="contained" color="secondary" onClick={this.exitGroupBtnClicked}>
+                        Exit Group
+                    </Button>
+                </Grid>
+            </Grid>
         );
     }
 }

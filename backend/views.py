@@ -95,3 +95,15 @@ class EnterGroupView(APIView):
             return Response({'Bad Request': 'Invalid Group Identifier'}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'Bad Request': 'Invalid Data, could not find Identifier'}, status=status.HTTP_400_BAD_REQUEST)
+
+class ExitGroup(APIView):
+    def post(self, request, format=None):
+        if 'group_identifier' in self.request.session:
+            self.request.session.pop('group_identifier')
+            ownerID = self.request.session.session_key
+            groupOutcome = Group.objects.filter(owner=ownerID)
+            if len(groupOutcome) > 0:
+                group = groupOutcome[0]
+                group.delete()
+
+        return Response({'Message': 'Success'}, status=status.HTTP_200_OK)

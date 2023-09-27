@@ -11,6 +11,7 @@ export default class Home extends Component {
         this.state = {
             groupIdentifier: null,
         };
+        this.resetGroupID = this.resetGroupID.bind(this);
     }
 
     async componentDidMount() {
@@ -18,6 +19,12 @@ export default class Home extends Component {
             this.setState({
                 groupIdentifier: data.identfier,
             });
+        });
+    }
+
+    resetGroupID() {
+        this.setState({
+            groupIdentifier: null,
         });
     }
 
@@ -81,9 +88,11 @@ export default class Home extends Component {
                         ) : (this.displayMainPage());
                         }}
                     />
-                    <Route path="/group/:groupIdentifier" component={Group} />
                     <Route path="/enter" component={EnterGroup} />
                     <Route path="/add" component={AddGroup} />
+                    <Route path="/group/:groupIdentifier" render={(props) => {
+                        return <Group {...props} exitGroupCallback={this.resetGroupID} />;
+                    }}/>
                 </Switch>
             </Router>
         );
