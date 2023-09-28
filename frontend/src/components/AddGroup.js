@@ -71,7 +71,7 @@ export default class AddGroup extends Component {
             body: JSON.stringify({
                 wants_to_skip: this.state.wantsToSkip,
                 pausible: this.state.pausible,
-                groupIdentifier: this.props.groupIdentifier,
+                identifier: this.props.groupIdentifier,
             }),
         };
 
