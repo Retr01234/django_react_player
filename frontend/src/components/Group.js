@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Grid, Button, Typography } from "@material-ui/core";
+import AddGroup from "./AddGroup";
 
 export default class Group extends Component {
     constructor(props) {
@@ -9,11 +10,16 @@ export default class Group extends Component {
             wantsToSkip: 0,
             pausible: false,
             owner: false,
+            editFields: false
         };
 
-        this.groupIdentifier = this.props.match.params.groupIdentifier;
         this.groupDetails();
+        this.groupIdentifier = this.props.match.params.groupIdentifier;
         this.exitGroupBtnClicked = this.exitGroupBtnClicked.bind(this);
+        this.editFieldData = this.editFieldData.bind(this);
+        this.displayEditBtn = this.displayEditBtn.bind(this);
+        this.showUpdatedFields = this.showUpdatedFields.bind(this);
+        this.getGroupDetails = this.getGroupDetails.bind(this);
     }
 
     groupDetails() {
@@ -45,7 +51,49 @@ export default class Group extends Component {
         });
     }
 
+    editFieldData(value) {
+        this.setState({
+            editFields: value,
+        });
+    }
+
+    showUpdatedFields() {
+        return (
+            <Grid container spacing={1}>
+                <Grid item xs={12} align="center">
+                    <AddGroup
+                        edit={true}
+                        wantsToSkip={this.state.wantsToSkip}
+                        pausible={this.state.pausible}
+                        groupIdentifier={this.groupIdentifier}
+                        editCallback={this.getGroupDetails}
+                    />
+                </Grid>
+
+                <Grid item xs={12} align="center">
+                    <Button variant="contained" color="secondary" onClick={() => this.editFieldData(false)}>
+                        Exit
+                    </Button>
+                </Grid>
+            </Grid>
+        );
+    }
+
+    displayEditBtn() {
+        return (
+            <Grid item xs={12} align="center">
+                <Button variant="contained" color="primary" onClick={() => this.editFieldData(true)}>
+                    Edit Fields
+                </Button>
+            </Grid>
+        );
+    }
+
     render() {
+        if (this.state.editFields) {
+            return this.showUpdatedFields();
+        }
+
         return (
             <Grid container spacing={3}>
                 <Grid item xs={12} align="center">
@@ -71,6 +119,8 @@ export default class Group extends Component {
                         Owner: {this.state.owner.toString()}
                     </Typography>
                 </Grid>
+
+                {this.state.owner ? this.displayEditBtn() : null}
 
                 <Grid item xs={12} align="center">
                     <Button variant="contained" color="secondary" onClick={this.exitGroupBtnClicked}>
