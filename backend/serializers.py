@@ -10,3 +10,10 @@ class AddGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = ('pausible', 'wants_to_skip')
+        
+class EditGroupSerializer(serializers.ModelSerializer):
+    identifier = serializers.CharField(validators=[])
+
+    class Meta:
+        model = Group
+        fields = ('pausible', 'wants_to_skip', 'identifier')

@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import GroupSerializer, AddGroupSerializer
+from .serializers import GroupSerializer, AddGroupSerializer, EditGroupSerializer
 from .models import Group
 
 # Create your views here.
@@ -96,7 +96,37 @@ class EnterGroupView(APIView):
 
         return Response({'Bad Request': 'Invalid Data, could not find Identifier'}, status=status.HTTP_400_BAD_REQUEST)
 
-class ExitGroup(APIView):
+class EditGroupView(APIView):
+        serializer_class = EditGroupSerializer
+        
+        def patch(self, request, format=None):
+            if not self.request.session.exists(self.request.session.session_key):
+                self.request.session.create()
+
+            serializer = self.serializer_class(data=request.data)
+            
+            if serializer.is_valid():
+                pausible = serializer.data.get('pausible')
+                wants_to_skip = serializer.data.get('wants_to_skip')
+                identifier = serializer.data.get('identifier')
+                
+                queryset = Group.objects.filter(identifier=identifier)
+                if not queryset.exists():
+                    return Response({'Message': 'Group was not found.'}, status=status.HTTP_404_NOT_FOUND)
+                
+                group = queryset[0]
+                userID = self.request.session.session_key
+                if group.owner != userID:
+                    return Response({'Message': 'Sorry, you are not the Owner of this Group.'}, status=status.HTTP_403_FORBIDDEN)
+
+                group.pausible = pausible
+                group.wants_to_skip = wants_to_skip
+                group.save(update_fields=['pausible', 'wants_to_skip'])
+                return Response(GroupSerializer(group).data, status=status.HTTP_200_OK)
+            
+            return Response({'Bad Request': "Data not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+class ExitGroupView(APIView):
     def post(self, request, format=None):
         if 'group_identifier' in self.request.session:
             self.request.session.pop('group_identifier')
