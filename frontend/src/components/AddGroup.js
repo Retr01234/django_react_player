@@ -9,20 +9,32 @@ import FormControl from "@material-ui/core/FormControl";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import { Collapse } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
 
 export default class AddGroup extends Component {
-    standardNrOfVotes = 0;
+    static defaultProps = {
+        wantsToSkip: 0,
+        pausible: true,
+        edit: false,
+        groupIdentifier: null,
+        editCallback: () => {}
+    }
 
     constructor(props) {
         super(props);
+
         this.state = {
-            pausible: true,
-            wantsToSkip: this.standardNrOfVotes
+            pausible: this.props.pausible,
+            wantsToSkip: this.props.wantsToSkip,
+            errorMessage: "",
+            successMessage: "",
         };
 
         this.handleGroupBtnClicked = this.handleGroupBtnClicked.bind(this);
         this.handleVotes = this.handleVotes.bind(this);
         this.handlePausing = this.handlePausing.bind(this);
+        this.handleEditBtnClicked = this.handleEditBtnClicked.bind(this);
     }
 
     handleVotes(event) {
@@ -52,12 +64,91 @@ export default class AddGroup extends Component {
             .then((data) => this.props.history.push("/group/" + data.identifier));
     }
 
-    render() {
+    handleEditBtnClicked() {
+        const requestOptions = {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                wants_to_skip: this.state.wantsToSkip,
+                pausible: this.state.pausible,
+                groupIdentifier: this.props.groupIdentifier,
+            }),
+        };
+
+        fetch("/backend/edit-group", requestOptions).then((response) => {
+            if (response.ok) {
+                this.setState({
+                    successMessage: "Group Update Successful :)",
+                });
+            } else {
+                this.setState({
+                    errorMessage: "Cannot Update Group :/",
+                });
+            }
+            this.props.editCallback();
+        });
+    }
+
+    displayAddButton() {
         return (
             <Grid container spacing={3}>
                 <Grid item xs={12} align="center">
+                    <Button color="primary" variant="contained" onClick={this.handleGroupBtnClicked}>
+                        Add a Group
+                    </Button>
+                </Grid>
+
+                <Grid item xs={12} align="center">
+                    <Button color="primary" variant="contained" to="/" component={Link}>
+                        return
+                    </Button>
+                </Grid>
+            </Grid>
+        );
+    }
+
+    displayEditButton() {
+        return (
+            <Grid item xs={12} align="center">
+                <Button color="primary" variant="contained" onClick={this.handleEditBtnClicked}>
+                    Edit Group
+                </Button>
+            </Grid>
+        );
+    }
+
+    render() {
+        const header = this.props.edit ? "Edit Group" : "Add a Group";
+
+        return (
+            <Grid container spacing={3}>
+                <Grid item xs={12} align="center">
+                    <Collapse in={this.state.errorMessage != "" || this.state.successMessage != ""}>
+                        {this.state.successMessage != "" ? (
+                            <Alert
+                                severity="success"
+                                onClose={() => {
+                                    this.setState({ successMessage: "" });
+                                }}
+                            >
+                                {this.state.successMessage}
+                            </Alert>
+                        ) : (
+                            <Alert
+                                severity="error"
+                                onClose={() => {
+                                    this.setState({ errorMessage: "" });
+                                }}
+                            >
+                                {this.state.errorMessage}
+                            </Alert>
+                        )}
+                    </Collapse>
+                </Grid>
+
+                <Grid item xs={12} align="center">
                     <Typography component="h2" variant="h2">
-                        Add A Group
+                        { header }
                     </Typography>
                 </Grid>
 
@@ -67,7 +158,11 @@ export default class AddGroup extends Component {
                             <div align="center">Controls</div>
                         </FormHelperText>
 
-                        <RadioGroup row defaultValue="true" onChange={this.handlePausing}>
+                        <RadioGroup 
+                            row 
+                            defaultValue={this.props.pausible.toString()}
+                            onChange={this.handlePausing}
+                        >
                             <FormControlLabel
                                 value="true"
                                 control={<Radio color="primary" />}
@@ -91,7 +186,7 @@ export default class AddGroup extends Component {
                             required={true}
                             type="number"
                             onChange={this.handleVotes}
-                            defaultValue={this.standardNrOfVotes}
+                            defaultValue={this.wantsToSkip}
                             inputProps={{
                                 min: 0,
                                 style: { textAlign: "center" },
@@ -103,17 +198,10 @@ export default class AddGroup extends Component {
                     </FormControl>
                 </Grid>
 
-                <Grid item xs={12} align="center">
-                    <Button color="primary" variant="contained" size="large" onClick={this.handleGroupBtnClicked}>
-                        Add a Group
-                    </Button>
-                </Grid>
-
-                <Grid item xs={12} align="center">
-                    <Button color="primary" variant="contained" size="large" to="/" component={Link}>
-                        Go Back
-                    </Button>
-                </Grid>
+                {this.props.edit
+                    ? this.displayEditButton()
+                    : this.displayAddButton()
+                }
             </Grid>
         );
     }

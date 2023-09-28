@@ -13,13 +13,13 @@ export default class Group extends Component {
             editFields: false
         };
 
-        this.groupDetails();
         this.groupIdentifier = this.props.match.params.groupIdentifier;
         this.exitGroupBtnClicked = this.exitGroupBtnClicked.bind(this);
         this.editFieldData = this.editFieldData.bind(this);
         this.displayEditBtn = this.displayEditBtn.bind(this);
         this.showUpdatedFields = this.showUpdatedFields.bind(this);
         this.getGroupDetails = this.getGroupDetails.bind(this);
+        this.groupDetails();
     }
 
     groupDetails() {
