@@ -10,7 +10,8 @@ export default class Group extends Component {
             wantsToSkip: 0,
             pausible: false,
             owner: false,
-            editFields: false
+            editFields: false,
+            isSpotifyAuthorized: false
         };
 
         this.groupDetails();
@@ -20,6 +21,7 @@ export default class Group extends Component {
         this.displayEditBtn = this.displayEditBtn.bind(this);
         this.showUpdatedFields = this.showUpdatedFields.bind(this);
         this.groupDetails = this.groupDetails.bind(this);
+        this.authorizeSpotify = this.authorizeSpotify.bind(this);
     }
 
     groupDetails() {
@@ -36,6 +38,10 @@ export default class Group extends Component {
                 pausible: data.pausible,
                 owner: data.owner,
             });
+
+            if (this.state.owner) {
+                this.authorizeSpotify();
+            }
         });
     }
 
@@ -87,6 +93,18 @@ export default class Group extends Component {
                 </Button>
             </Grid>
         );
+    }
+
+    authorizeSpotify() {
+        fetch("/spotify/authorized").then((response) => response.json()).then((data) => {
+            this.setState({ isSpotifyAuthorized: data.status });
+
+            if (!data.status) {
+                fetch("/spotify/get-verified-url").then((response) => response.json()).then((data) => {
+                    window.location.replace(data.url);
+                });
+            }
+        });
     }
 
     render() {

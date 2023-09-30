@@ -4,6 +4,8 @@ from datetime import timedelta
 from requests import post
 from django.utils import timezone
 
+BASE_URL = "https://api.spotify.com/v1/me/"
+
 def getTokens(session_key):
     UserToken = SpotifyAPIToken.objects.filter(user=session_key)
     
@@ -32,7 +34,7 @@ def refreshToken(session_key):
     
     response = post('https://accounts.spotify.com/api/token', data={
         'grant': 'refreshToken',
-        'refreshToken': 'refreshToken',
+        'refreshToken': refresh,
         'clientID': CLIENT_ID,
         'clientSecret': CLIENT_SECRET
     }).json()
