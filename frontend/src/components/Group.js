@@ -14,7 +14,6 @@ export default class Group extends Component {
             isSpotifyAuthorized: false
         };
 
-        this.groupDetails();
         this.groupIdentifier = this.props.match.params.groupIdentifier;
         this.exitGroupBtnClicked = this.exitGroupBtnClicked.bind(this);
         this.editFieldData = this.editFieldData.bind(this);
@@ -22,6 +21,7 @@ export default class Group extends Component {
         this.showUpdatedFields = this.showUpdatedFields.bind(this);
         this.groupDetails = this.groupDetails.bind(this);
         this.authorizeSpotify = this.authorizeSpotify.bind(this);
+        this.groupDetails();
     }
 
     groupDetails() {
@@ -41,6 +41,18 @@ export default class Group extends Component {
 
             if (this.state.owner) {
                 this.authorizeSpotify();
+            }
+        });
+    }
+
+    authorizeSpotify() {
+        fetch("/spotify/authorized").then((response) => response.json()).then((data) => {
+            this.setState({ isSpotifyAuthorized: data.status });
+
+            if (!data.status) {
+                fetch("/spotify/get-verified-url").then((response) => response.json()).then((data) => {
+                    window.location.replace(data.url);
+                });
             }
         });
     }
@@ -93,18 +105,6 @@ export default class Group extends Component {
                 </Button>
             </Grid>
         );
-    }
-
-    authorizeSpotify() {
-        fetch("/spotify/authorized").then((response) => response.json()).then((data) => {
-            this.setState({ isSpotifyAuthorized: data.status });
-
-            if (!data.status) {
-                fetch("/spotify/get-verified-url").then((response) => response.json()).then((data) => {
-                    window.location.replace(data.url);
-                });
-            }
-        });
     }
 
     render() {
