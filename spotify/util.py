@@ -1,13 +1,13 @@
-from .models import SpotifyAPIToken
+from .models import SpotifyToken
 from .identification import CLIENT_ID, CLIENT_SECRET
 from datetime import timedelta
 from requests import post
 from django.utils import timezone
 
-BASE_URL = "https://api.spotify.com/v1/me/"
+BASE_URL = "https://backend.spotify.com/v1/me/"
 
 def getTokens(session_key):
-    UserToken = SpotifyAPIToken.objects.filter(user=session_key)
+    UserToken = SpotifyToken.objects.filter(user=session_key)
     
     if UserToken.exists():
         return UserToken[0]
@@ -25,7 +25,7 @@ def editOrAddTokens(session_key, accessToken, tokenType, expires, refreshToken):
         token.tokenType = tokenType
         token.save(update_fields=['accessToken', 'refreshToken', 'expires', 'tokenType'])
     else:
-        token = SpotifyAPIToken(user=session_key, accessToken=accessToken, refreshToken=refreshToken, tokenType=tokenType, expires=expires)
+        token = SpotifyToken(user=session_key, accessToken=accessToken, refreshToken=refreshToken, tokenType=tokenType, expires=expires)
 
         token.save()
         

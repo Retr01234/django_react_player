@@ -25,14 +25,16 @@ export default class Group extends Component {
     }
 
     groupDetails() {
-        return fetch("/backend/get-group" + "?identifier=" + this.groupIdentifier).then((response) => {
-            if (!response.ok) {
-                this.props.exitGroupCallback();
-                this.props.history.push("/");
-            }
+        return fetch("/backend/get-group" + "?identifier=" + this.groupIdentifier)
+            .then((response) => {
+                if (!response.ok) {
+                    this.props.exitGroupCallback();
+                    this.props.history.push("/");
+                }
 
             return response.json();
-        }).then((data) => {
+        })
+        .then((data) => {
             this.setState({
                 wantsToSkip: data.wants_to_skip,
                 pausible: data.pausible,

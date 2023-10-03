@@ -11,16 +11,6 @@ class GroupView(generics.ListAPIView):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
-class PersonInGroup(APIView):
-    def get(self, request, format=None):
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
-
-        data = {
-            'identifier': self.request.session.get('group_identifier')
-        }
-        return JsonResponse(data, status=status.HTTP_200_OK)
-
 class AddGroupView(APIView):
     serializer_class = AddGroupSerializer
 
@@ -54,7 +44,7 @@ class AddGroupView(APIView):
                 return Response(GroupSerializer(group).data, status=status.HTTP_201_CREATED)
         
         return Response({'Bad Request': 'Data is Invalid'}, status=status.HTTP_400_BAD_REQUEST)
-    
+
 class GetGroupView(APIView):
     serializer_class = GroupSerializer
     search_url = 'identifier'
@@ -96,6 +86,28 @@ class EnterGroupView(APIView):
 
         return Response({'Bad Request': 'Invalid Data, could not find Identifier'}, status=status.HTTP_400_BAD_REQUEST)
 
+class PersonInGroup(APIView):
+    def get(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+
+        data = {
+            'identifier': self.request.session.get('group_identifier')
+        }
+        return JsonResponse(data, status=status.HTTP_200_OK)
+
+class ExitGroupView(APIView):
+    def post(self, request, format=None):
+        if 'group_identifier' in self.request.session:
+            self.request.session.pop('group_identifier')
+            ownerID = self.request.session.session_key
+            groupOutcome = Group.objects.filter(owner=ownerID)
+            if len(groupOutcome) > 0:
+                group = groupOutcome[0]
+                group.delete()
+
+        return Response({'Message': 'Success'}, status=status.HTTP_200_OK)
+
 class EditGroupView(APIView):
         serializer_class = EditGroupSerializer
         
@@ -125,15 +137,3 @@ class EditGroupView(APIView):
                 return Response(GroupSerializer(group).data, status=status.HTTP_200_OK)
             
             return Response({'Bad Request': "Data not valid"}, status=status.HTTP_400_BAD_REQUEST)
-
-class ExitGroupView(APIView):
-    def post(self, request, format=None):
-        if 'group_identifier' in self.request.session:
-            self.request.session.pop('group_identifier')
-            ownerID = self.request.session.session_key
-            groupOutcome = Group.objects.filter(owner=ownerID)
-            if len(groupOutcome) > 0:
-                group = groupOutcome[0]
-                group.delete()
-
-        return Response({'Message': 'Success'}, status=status.HTTP_200_OK)
